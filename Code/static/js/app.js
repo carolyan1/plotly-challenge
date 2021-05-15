@@ -19,20 +19,25 @@ function init() {
     }
 
 //Change Event
-function optionChanged(){
-    buildPlot();
-    demoinfo();
+function optionChanged(otu_id){
+    buildPlot(otu_id);
+    demoinfo(otu_id);
 }
 
 //Plotting the two graphs
-function buildPlot(){
+function buildPlot(otu_id){
     //read data from json and print them
     d3.json("samples.json").then(bdata => { 
         console.log(bdata);
+
+        console.log(otu_id)
+        var filteredSamples = bdata.samples.filter(sample => sample.id == otu_id);
+        console.log(filteredSamples[0])
+
         // Grab values from samples.json
-        var ids = bdata.samples[0].otu_ids;
-        var sample_values = bdata.samples[0].sample_values.slice(0,10).reverse();
-        var labels = bdata.samples[0].otu_labels.slice(0.10);
+        var ids = filteredSamples[0].otu_ids;
+        var sample_values = filteredSamples[0].sample_values.slice(0,10).reverse();
+        var labels = filteredSamples[0].otu_labels.slice(0,10);
         var top_OTUs = labels.reverse();
         var OTU_id = top_OTUs.map(d => "OTU " + d);
         
@@ -75,13 +80,13 @@ function buildPlot(){
     })};
 
 //Demographic information
-function demoinfo(){
+function demoinfo(otu_id){
     d3.json("samples.json").then((bdata)=> {
         var demochart = d3.select("#sample-metadata")
         // demo info is stored in metadata in json
         var metad = bdata.metadata;
         // filter metadata by id
-        var info = metad.filter(me=> me.id==ids)[0];
+        var info = metad.filter(me=> me.id==otu_id)[0];
     
         // clear up the existing data
         demochart.html("");
